@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interpolator</title>
+    <script src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px 10px 20px 10px;
+        }
+
+        #calculator {
+            width: 600px;
+            height: 400px;
+            margin: 0 auto 20px; /* Center horizontally with auto margins and add margin at the bottom */
+        }
+
+        #pointsContainer {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .point {
+            position: relative;
+            padding: 20px;
+            width: 300px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+            display: flex;
+            align-items: center;
+            margin: 10px;
+        }
+
+        .point:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .deletePointButton {
+            background-color: #e74c3c;
+            color: #fff;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-left: auto;
+            cursor: pointer;
+        }
+
+        .coordinateLabel,
+        .coordinateInput {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .coordinateInput {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+
+        #functionInput {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .functionLabel {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        #function {
+            flex: 1;
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+        }
+
+        #addPoint {
+            background-color: #3498db;
+            color: #fff;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        #addPoint:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+<div id="calculator"></div>
+
+<div id="pointsContainer">
+    <div id="functionInput" class="point">
+        <input type="text" id="function" placeholder="Enter function">
+        <button id="addPoint">Add Point</button>
+    </div>
+
+    <div id="points">
+
+    </div>
+</div>
+
+<script>
+    let graphElement = document.getElementById('calculator');
+    let graphObject = Desmos.GraphingCalculator(graphElement,
+        {
+            keypad: false,
+            expressions: false,
+            settingsMenu: false,
+            pointsOfInterest: false,
+            trace: false
+        }
+    );
+
+    const functionInput = document.getElementById("function")
+    functionInput.onkeyup = function (event) {
+        graphObject.setExpression({
+            id: "function",
+            latex: functionInput.value
+        });
+    };
+
+    const addPointButton = document.getElementById("addPoint");
+    addPointButton.onclick = function (event) {
+        const pointsElement = document.getElementById("points");
+
+        const point = document.createElement("div");
+        point.className = "point";
+
+        const xLab = document.createElement("label");
+        xLab.className = "coordinateLabel"
+        xLab.for = "x_coord"
+        xLab.innerText = "X:"
+
+        const xInput = document.createElement("input")
+        xInput.type = "number"
+        xInput.id = "x_coord"
+        xInput.className = "coordinateInput"
+
+        const yLab = document.createElement("label");
+        yLab.className = "coordinateLabel"
+        yLab.for = "y_coord"
+        yLab.innerText = "Y:"
+
+        const yInput = document.createElement("input")
+        yInput.type = "number"
+        yInput.id = "y_coord"
+        yInput.className = "coordinateInput"
+
+        const button = document.createElement("button")
+        button.className = "deletePointButton"
+        button.onclick = function (event) {
+            pointsElement.removeChild(event.target.parentNode)
+        }
+        button.innerText = "Delete"
+
+        point.append(xLab, xInput, yLab, yInput, button)
+
+        pointsElement.insertBefore(point, pointsElement.firstChild)
+
+    }
+
+
+</script>
+</body>
+</html>
