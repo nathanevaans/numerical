@@ -208,7 +208,7 @@
         xInput.type = "number"
         xInput.className = "coordinateInput"
         xInput.oninput = function (event) {
-            let val = parseInt(xInput.value)
+            let val = parseFloat(xInput.value)
 
             if (!isNaN(val) && Array.from(points.values()).some(v => v === val)) {
                 val = NaN
