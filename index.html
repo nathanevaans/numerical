@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interpolator</title>
+
     <script src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+    <script src="math.js"></script>
+    <script src="poly.js"></script>
+
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -14,8 +18,8 @@
         }
 
         #calculator {
-            width: 600px;
-            height: 400px;
+            width: 75vw;
+            height: 60vh;
             margin: 0 auto 20px; /* Center horizontally with auto margins and add margin at the bottom */
         }
 
@@ -26,10 +30,17 @@
             align-items: center;
         }
 
-        .point {
+        #points {
+            display: flex;
+            flex-wrap: wrap;
+            position: center;
+            width: 80vw;
+            justify-content: center;
+        }
+
+        .point, .functionContainer {
             position: relative;
             padding: 20px;
-            width: 300px;
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -39,7 +50,15 @@
             margin: 10px;
         }
 
-        .point:hover {
+        .point {
+            width: 150px;
+        }
+
+        .functionContainer {
+            width: 300px;
+        }
+
+        .point:hover, .functionContainer:hover {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
@@ -117,36 +136,60 @@
 <div id="calculator"></div>
 
 <div id="pointsContainer">
-    <div id="functionInput" class="point">
+    <div id="functionInput" class="functionContainer">
         <input type="text" id="function" placeholder="Enter function">
         <button id="addPoint">Add Point</button>
     </div>
 
     <div id="points">
-
     </div>
 </div>
 
 <script>
-    let graphElement = document.getElementById('calculator');
-    let graphObject = Desmos.GraphingCalculator(graphElement,
-        {
-            keypad: false,
-            expressions: false,
-            settingsMenu: false,
-            pointsOfInterest: false,
-            trace: false
-        }
-    );
+    function renderPlots () {
+        const ps = Array.from(points.values());
 
-    const functionInput = document.getElementById("function")
-    functionInput.onkeyup = function (event) {
+        const latex = functionInput.value
+        const f = latexToFunction(latex)
+
+        const interpolant = polynomialInterpolant(f, ps)
+        const interpolantLatex = polynomialToString(interpolant)
+
+        const latexPs = ps.map(p => `(${p}, ${f(p)})`).join(', ')
+
         graphObject.setExpression({
             id: "function",
-            latex: functionInput.value
+            latex: latex
         });
+
+        graphObject.setExpression({
+            id: "interpolant",
+            latex: "y = " + interpolantLatex
+        });
+
+        graphObject.setExpression({
+            id: "points",
+            latex: latexPs
+        });
+    }
+
+    // graph set up
+    let graphElement = document.getElementById('calculator');
+    let graphObject = Desmos.GraphingCalculator(graphElement, {
+        keypad: false,
+        expressions: false,
+        settingsMenu: false,
+        pointsOfInterest: false,
+        trace: false
+    });
+
+    // function input handlers
+    const functionInput = document.getElementById("function")
+    functionInput.onkeyup = function (event) {
+        renderPlots()
     };
 
+    // add point handler
     const addPointButton = document.getElementById("addPoint");
     addPointButton.onclick = function (event) {
         const pointsElement = document.getElementById("points");
@@ -154,40 +197,32 @@
         const point = document.createElement("div");
         point.className = "point";
 
-        const xLab = document.createElement("label");
-        xLab.className = "coordinateLabel"
-        xLab.for = "x_coord"
-        xLab.innerText = "X:"
-
         const xInput = document.createElement("input")
         xInput.type = "number"
-        xInput.id = "x_coord"
         xInput.className = "coordinateInput"
-
-        const yLab = document.createElement("label");
-        yLab.className = "coordinateLabel"
-        yLab.for = "y_coord"
-        yLab.innerText = "Y:"
-
-        const yInput = document.createElement("input")
-        yInput.type = "number"
-        yInput.id = "y_coord"
-        yInput.className = "coordinateInput"
+        xInput.onkeyup = function (event) {
+            points.set(point, xInput.value)
+            renderPlots()
+        }
 
         const button = document.createElement("button")
         button.className = "deletePointButton"
         button.onclick = function (event) {
-            pointsElement.removeChild(event.target.parentNode)
+            const point = event.target.parentNode
+            points.delete(point)
+            pointsElement.removeChild(point)
+            renderPlots()
         }
         button.innerText = "Delete"
 
-        point.append(xLab, xInput, yLab, yInput, button)
+        point.append(xInput, button)
 
-        pointsElement.insertBefore(point, pointsElement.firstChild)
+        pointsElement.append(point)
 
+        points.set(point, xInput.value)
     }
 
-
+    let points = new Map()
 </script>
 </body>
 </html>
