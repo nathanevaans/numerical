@@ -8,6 +8,7 @@
     <script src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
     <script src="math.js"></script>
     <script src="poly.js"></script>
+    <script src="comp.js"></script>
 
     <style>
         body {
@@ -55,7 +56,7 @@
         }
 
         .functionContainer {
-            width: 300px;
+            width: 400px;
         }
 
         .point:hover, .functionContainer:hover {
@@ -130,6 +131,48 @@
         #addPoint:hover {
             background-color: #2980b9;
         }
+
+        /*    new*/
+        #compositeCheckboxContainer {
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        #compositeCheckbox {
+            margin-left: 5px;
+        }
+
+        #compositeInputContainer {
+            width: 70px;
+            display: none;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        #compositeInput {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+            text-align: center;
+        }
+
+        #compositeInputContainer.card {
+            background-color: #ecf0f1;
+        }
+
+        #compositeInputContainer.card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #compositeInputContainer.card .deletePointButton {
+            margin-left: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -139,6 +182,15 @@
     <div id="functionInput" class="functionContainer">
         <input type="text" id="function" placeholder="Enter function">
         <button id="addPoint">Add Point</button>
+
+        <div id="compositeCheckboxContainer">
+            <label for="compositeCheckbox">Composite</label>
+            <input type="checkbox" id="compositeCheckbox">
+        </div>
+    </div>
+
+    <div id="compositeInputContainer" class="functionContainer">
+        <input type="number" id="compositeInput" value="1", placeholder="Degree">
     </div>
 
     <div id="points">
@@ -146,6 +198,10 @@
 </div>
 
 <script>
+    function clean() {
+        graphObject.removeExpressions(graphObject.getExpressions())
+    }
+
     function renderPlots() {
         const ps = Array.from(points.values()).filter(p => !isNaN(p))
 
@@ -163,18 +219,84 @@
 
         graphObject.setExpression({
             id: "function",
-            latex: latex
+            latex: latex,
+            color: Desmos.Colors.BLACK,
         });
 
         graphObject.setExpression({
             id: "interpolant",
-            latex: "y = " + interpolantLatex
+            latex: "y = " + interpolantLatex,
+            lineWidth: 5,
+            color: Desmos.Colors.RED
         });
 
         graphObject.setExpression({
             id: "points",
-            latex: latexPs
+            latex: latexPs,
+            pointSize: 15,
+            color: Desmos.Colors.RED
         });
+    }
+
+    function renderCompPlots() {
+        const latex = functionInput.value
+        const f = latexToFunction(latex)
+
+        graphObject.setExpression({
+            id: "function",
+            latex: latex,
+            color: Desmos.Colors.BLACK,
+        });
+
+        const ps = Array.from(points.values())
+            .filter(p => !isNaN(p))
+            .sort((a, b) => a > b)
+
+        const intervals = splitIntervals(ps, degree)
+
+        for (let i = 0; i < intervals.length; i++) {
+
+            const interpolant = polynomialInterpolant(f, intervals[i])
+            let interpolantLatex = polynomialToString(interpolant)
+
+            graphObject.setExpression({
+                id: "interpolant " + i,
+                latex: "y = " + interpolantLatex + ` \\{ ${intervals[i][0]} <= x <= ${intervals[i][degree]} \\}`,
+                color: Desmos.Colors.RED,
+                lineWidth: 5
+            });
+
+            intervals[i].shift()
+            intervals[i].pop()
+            const latexPs = intervals[i].map(p => `(${p}, ${f(p)})`).join(', ')
+
+            graphObject.setExpression({
+                id: "points " + i,
+                latex: latexPs,
+                pointSize: 10,
+                color: Desmos.Colors.PURPLE,
+            });
+        }
+
+        const latexPs = ps.map(p => `(${p}, ${f(p)})`).join(', ')
+
+        graphObject.setExpression({
+            id: "points",
+            latex: latexPs,
+            pointSize: 15,
+            color: Desmos.Colors.RED,
+        });
+    }
+
+    function render() {
+        try {
+            if (checkBox.checked) {
+                renderCompPlots()
+            } else {
+                renderPlots()
+            }
+        } catch (ignored) {
+        }
     }
 
     // graph set up
@@ -190,10 +312,8 @@
     // function input handlers
     const functionInput = document.getElementById("function")
     functionInput.oninput = function (event) {
-        try {
-            renderPlots()
-        } catch (ignored) {
-        }
+        clean()
+        render()
     };
 
     // add point handler
@@ -215,10 +335,9 @@
             }
 
             points.set(point, val)
-            try {
-                renderPlots()
-            } catch (ignored) {
-            }
+
+            clean()
+            render()
         }
 
         const button = document.createElement("button")
@@ -227,10 +346,9 @@
             const point = event.target.parentNode
             points.delete(point)
             pointsElement.removeChild(point)
-            try {
-                renderPlots()
-            } catch (ignored) {
-            }
+
+            clean()
+            render()
         }
         button.innerText = "Delete"
 
@@ -241,6 +359,28 @@
         xInput.focus()
 
         points.set(point, NaN)
+    }
+
+    // degree input handler
+    let degree = 1
+    const degreeInput = document.getElementById("compositeInput")
+    degreeInput.oninput = function (event) {
+        degree = parseInt(degreeInput.value)
+        clean()
+        render()
+    }
+
+    // composite toggle handler
+    const checkBox = document.getElementById("compositeCheckbox")
+    const container = document.getElementById("compositeInputContainer")
+    checkBox.onchange = function (event) {
+        container.style.display = checkBox.checked ? 'flex' : 'none';
+        if (!checkBox){
+            degreeInput.value = 1
+            degree = 1
+        }
+        clean()
+        render()
     }
 
     let points = new Map()
