@@ -221,8 +221,6 @@
             }
         }
 
-        xInput.focus()
-
         const button = document.createElement("button")
         button.className = "deletePointButton"
         button.onclick = function (event) {
@@ -239,6 +237,8 @@
         point.append(xInput, button)
 
         pointsElement.append(point)
+
+        xInput.focus()
 
         points.set(point, NaN)
     }
