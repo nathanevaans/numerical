@@ -133,6 +133,8 @@ function parseFrac(string) {
 function parseLatex(string) {
     let result = parseFrac(string)
     result = result.replace(/\\/g, '');
+    result = result.replace("{", "(");
+    result = result.replace("}", ")");
     return result
 }
 
