@@ -146,7 +146,7 @@
 </div>
 
 <script>
-    function renderPlots () {
+    function renderPlots() {
         const ps = Array.from(points.values()).filter(p => !isNaN(p))
 
         const latex = functionInput.value
@@ -188,7 +188,8 @@
     functionInput.onkeyup = function (event) {
         try {
             renderPlots()
-        } catch (ignored) {}
+        } catch (ignored) {
+        }
     };
 
     // add point handler
@@ -203,17 +204,16 @@
         xInput.type = "number"
         xInput.className = "coordinateInput"
         xInput.onkeyup = function (event) {
-            const val = parseInt(xInput.value)
-            if (!isNaN(val)) {
-                points.set(point, val)
-                try {
-                    renderPlots()
-                } catch (ignored) {}
-            } else {
-                points.set(point, NaN)
-                try {
-                    renderPlots()
-                } catch (ignored) {}
+            let val = parseInt(xInput.value)
+
+            if (!isNaN(val) && Array.from(points.values()).some(v => v === val)) {
+                val = NaN
+            }
+
+            points.set(point, val)
+            try {
+                renderPlots()
+            } catch (ignored) {
             }
         }
 
@@ -225,7 +225,8 @@
             pointsElement.removeChild(point)
             try {
                 renderPlots()
-            } catch (ignored) {}
+            } catch (ignored) {
+            }
         }
         button.innerText = "Delete"
 
