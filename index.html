@@ -153,9 +153,13 @@
         const f = latexToFunction(latex)
 
         const interpolant = polynomialInterpolant(f, ps)
-        const interpolantLatex = polynomialToString(interpolant)
+        let interpolantLatex = polynomialToString(interpolant)
 
         const latexPs = ps.map(p => `(${p}, ${f(p)})`).join(', ')
+
+        if (ps.length === 1 && ps[0] === 0 && f(ps[0]) === 0) {
+            interpolantLatex = interpolantLatex || '0'
+        }
 
         graphObject.setExpression({
             id: "function",
@@ -185,7 +189,7 @@
 
     // function input handlers
     const functionInput = document.getElementById("function")
-    functionInput.onkeyup = function (event) {
+    functionInput.oninput = function (event) {
         try {
             renderPlots()
         } catch (ignored) {
@@ -203,7 +207,7 @@
         const xInput = document.createElement("input")
         xInput.type = "number"
         xInput.className = "coordinateInput"
-        xInput.onkeyup = function (event) {
+        xInput.oninput = function (event) {
             let val = parseInt(xInput.value)
 
             if (!isNaN(val) && Array.from(points.values()).some(v => v === val)) {
