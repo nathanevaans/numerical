@@ -6,109 +6,70 @@
     <title>Interpolator</title>
 
     <script src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+
     <script src="math.js"></script>
+
     <script src="poly.js"></script>
     <script src="comp.js"></script>
 
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f2f2f2;
             margin: 0;
-            padding: 20px 10px 20px 10px;
+            padding: 20px 10px;
+            background-color: #f2f2f2;
+            font-family: 'Arial', sans-serif;
         }
 
+        #app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #app > * {
+            margin-bottom: 10px;
+        }
+
+        /* desmos */
         #calculator {
             width: 75vw;
             height: 60vh;
-            margin: 0 auto 20px; /* Center horizontally with auto margins and add margin at the bottom */
-        }
 
-        #pointsContainer {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #points {
-            display: flex;
-            flex-wrap: wrap;
-            position: center;
-            width: 80vw;
-            justify-content: center;
-        }
-
-        .point, .functionContainer {
-            position: relative;
             padding: 20px;
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: box-shadow 0.3s;
-            display: flex;
-            align-items: center;
             margin: 10px;
         }
 
-        .point {
-            width: 150px;
-        }
-
-        .functionContainer {
-            width: 400px;
-        }
-
-        .point:hover, .functionContainer:hover {
+        #calculator:hover {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .deletePointButton {
-            background-color: #e74c3c;
-            color: #fff;
-            padding: 8px;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            margin-left: auto;
-            cursor: pointer;
-        }
-
-        .coordinateLabel,
-        .coordinateInput {
-            font-size: 16px;
-            margin-right: 10px;
-        }
-
-        .coordinateInput {
-            width: 60px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            outline: none;
-            -webkit-appearance: none;
-            -moz-appearance: textfield;
-        }
-
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-        }
-
-        #functionInput {
+        /* controls */
+        #controls {
             display: flex;
+            flex-direction: row;
+            justify-content: center;
             align-items: center;
-            margin-bottom: 10px;
+
+            position: relative;
+
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+            margin: 10px;
         }
 
-        .functionLabel {
-            font-size: 16px;
-            margin-right: 10px;
+        #controls:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        #function {
-            flex: 1;
-            width: 100%;
+        .input {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -132,26 +93,13 @@
             background-color: #2980b9;
         }
 
-        /*    new*/
-        #compositeCheckboxContainer {
-            display: flex;
-            align-items: center;
+        #checkboxContainer {
             margin-left: 10px;
         }
 
-        #compositeCheckbox {
+        #degree {
             margin-left: 5px;
-        }
-
-        #compositeInputContainer {
-            width: 70px;
-            display: none;
-            margin-top: 10px;
-            justify-content: center;
-        }
-
-        #compositeInput {
-            width: 100%;
+            width: 50px;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -161,40 +109,81 @@
             text-align: center;
         }
 
-        #compositeInputContainer.card {
-            background-color: #ecf0f1;
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
         }
 
-        #compositeInputContainer.card:hover {
+        /* points */
+        #points {
+            display: flex;
+            flex-wrap: wrap;
+            position: center;
+            width: 80vw;
+            justify-content: center;
+        }
+
+        .point {
+            position: relative;
+            justify-content: space-around;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+            display: flex;
+            align-items: center;
+            margin: 10px;
+            width: 150px;
+        }
+
+        .point:hover {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        #compositeInputContainer.card .deletePointButton {
-            margin-left: 0;
+        .point > input {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+            text-align: center;
         }
 
+        .point > button {
+            background-color: #e74c3c;
+            color: #fff;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-left: auto;
+            cursor: pointer;
+        }
+
+        .point > button:hover {
+            background-color: #c0392b;
+        }
     </style>
 </head>
 <body>
-<div id="calculator"></div>
 
-<div id="pointsContainer">
-    <div id="functionInput" class="functionContainer">
-        <input type="text" id="function" placeholder="Enter function">
+<div id="app">
+    <div id="calculator"></div>
+
+    <div id="controls">
+        <input type="text" id="functionInput" class="input" placeholder="Enter function">
         <button id="addPoint">Add Point</button>
-
-        <div id="compositeCheckboxContainer">
-            <label for="compositeCheckbox">Composite</label>
-            <input type="checkbox" id="compositeCheckbox">
+        <div id="checkboxContainer">
+            <label for="checkbox">Composite</label>
+            <input type="checkbox" id="checkbox">
         </div>
+        <input disabled type="number" id="degree" class="input">
     </div>
 
-    <div id="compositeInputContainer" class="functionContainer">
-        <input type="number" id="compositeInput" value="1", placeholder="Degree">
-    </div>
-
-    <div id="points">
-    </div>
+    <div id="points"></div>
 </div>
 
 <script>
@@ -255,7 +244,6 @@
         const intervals = splitIntervals(ps, degree)
 
         for (let i = 0; i < intervals.length; i++) {
-
             const interpolant = polynomialInterpolant(f, intervals[i])
             let interpolantLatex = polynomialToString(interpolant)
 
@@ -299,9 +287,9 @@
         }
     }
 
-    // graph set up
-    let graphElement = document.getElementById('calculator');
-    let graphObject = Desmos.GraphingCalculator(graphElement, {
+    // Desmos
+    const graphElement = document.getElementById('calculator');
+    const graphObject = Desmos.GraphingCalculator(graphElement, {
         keypad: false,
         expressions: false,
         settingsMenu: false,
@@ -309,14 +297,14 @@
         trace: false
     });
 
-    // function input handlers
-    const functionInput = document.getElementById("function")
+    // Function input
+    const functionInput = document.getElementById("functionInput")
     functionInput.oninput = function (event) {
         clean()
         render()
-    };
+    }
 
-    // add point handler
+    // Add point
     const addPointButton = document.getElementById("addPoint");
     addPointButton.onclick = function (event) {
         const pointsElement = document.getElementById("points");
@@ -324,11 +312,11 @@
         const point = document.createElement("div");
         point.className = "point";
 
-        const xInput = document.createElement("input")
-        xInput.type = "number"
-        xInput.className = "coordinateInput"
-        xInput.oninput = function (event) {
-            let val = parseFloat(xInput.value)
+        const input = document.createElement("input")
+        input.type = "number"
+        input.className = "input"
+        input.oninput = function (event) {
+            let val = parseFloat(input.value)
 
             if (!isNaN(val) && Array.from(points.values()).some(v => v === val)) {
                 val = NaN
@@ -341,7 +329,7 @@
         }
 
         const button = document.createElement("button")
-        button.className = "deletePointButton"
+        button.className = "deletePoint"
         button.onclick = function (event) {
             const point = event.target.parentNode
             points.delete(point)
@@ -352,38 +340,41 @@
         }
         button.innerText = "Delete"
 
-        point.append(xInput, button)
+        point.append(input, button)
 
         pointsElement.append(point)
 
-        xInput.focus()
+        input.focus()
 
         points.set(point, NaN)
     }
 
-    // degree input handler
+    // Checkbox
+    const checkBox = document.getElementById("checkbox")
+    const degreeInput = document.getElementById("degree")
     let degree = 1
-    const degreeInput = document.getElementById("compositeInput")
+    checkBox.oninput = function (event) {
+        degreeInput.disabled = !checkBox.checked
+        if (!checkBox.checked) {
+            degreeInput.value = ""
+        } else {
+            degreeInput.value = degree
+            degreeInput.focus()
+        }
+        clean()
+        render()
+    }
+
+    // Degree
     degreeInput.oninput = function (event) {
         degree = parseInt(degreeInput.value)
         clean()
         render()
     }
 
-    // composite toggle handler
-    const checkBox = document.getElementById("compositeCheckbox")
-    const container = document.getElementById("compositeInputContainer")
-    checkBox.onchange = function (event) {
-        container.style.display = checkBox.checked ? 'flex' : 'none';
-        if (!checkBox){
-            degreeInput.value = 1
-            degree = 1
-        }
-        clean()
-        render()
-    }
-
+    // Entry
     let points = new Map()
 </script>
+
 </body>
 </html>

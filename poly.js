@@ -65,7 +65,7 @@ function polynomialToString(poly) {
     return poly.map((coeff, index) => {
         if (coeff === 0) return '';
 
-        coeff = parseFloat(coeff)
+        coeff = parseFloat(coeff).toFixed(15)
         if (index === 0) {
             return `${coeff}`;
         } else if (index === 1) {
