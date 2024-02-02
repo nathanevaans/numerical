@@ -1,3 +1,5 @@
+Created with the Desmos API, used with permission from Desmos Studio PBC
+
 # Colours
 
 - Red points are the specific points
