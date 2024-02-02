@@ -31,6 +31,14 @@
             margin-bottom: 10px;
         }
 
+        p {
+            font-size: 10px;
+        }
+
+        a {
+            font-size: 10px;
+        }
+
         /* desmos */
         #calculator {
             width: 75vw;
@@ -41,11 +49,34 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: box-shadow 0.3s;
-            margin: 10px;
         }
 
         #calculator:hover {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* text */
+        #text {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-around;
+            margin: 0;
+        }
+
+        #text > a {
+            margin-left: 10px;
+            text-decoration: none;
+            background-color: #8e44ad;
+            color: #fff;
+            padding: 6px;
+            border: none;
+            border-radius: 5px;
+            font-size: 10px;
+        }
+
+        #text > a:hover {
+            background-color: #763b8e;
         }
 
         /* controls */
@@ -172,6 +203,11 @@
 
 <div id="app">
     <div id="calculator"></div>
+
+    <div id="text">
+        <p>Created with the Desmos API, used with permission from Desmos Studio PBC.</p>
+        <a href="https://github.com/nathanevaans/numerical" target="_blank" rel="noopener noreferrer">Documentation and usage</a>
+    </div>
 
     <div id="controls">
         <input type="text" id="functionInput" class="input" placeholder="Enter function">
