@@ -279,7 +279,7 @@
 
         const ps = Array.from(points.values())
             .filter(p => !isNaN(p))
-            .sort((a, b) => a > b)
+            .sort((a, b) => a - b)
 
         const intervals = splitIntervals(ps, degree)
 
