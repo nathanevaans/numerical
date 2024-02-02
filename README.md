@@ -22,12 +22,12 @@ The input is fairly flexible but not every function is supported e.g. hyperbolic
 
 # Add Points
 
-Enter x-coordinate values you want to interpolate at
+Enter x-coordinate values you want to interpolate at, point order does not matter
 
 # Composite
 
-When checked the function is piecewise interpolated using the given points as the end points of each interval
+When checked the function is piecewise interpolated using the given points as the end points of each interval, point order does not matter
 
 # Composite Input Field
 
-This text input is to specify the degree of the piecewise interpolants 
+This text input specifies the degree of the piecewise interpolants and is preserved when composite mode is toggled on and off
